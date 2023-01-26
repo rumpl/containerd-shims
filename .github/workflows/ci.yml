@@ -28,7 +28,7 @@ jobs:
         with:
           images: ${{ env.REPO_SLUG }}
           ### on push default branch (main):
-          # wasmedge/runwasi:main
+          # wasmedge/runwasi:<git-sha>
           tags: |
             type=sha
           bake-target: meta-helper

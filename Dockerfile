@@ -13,7 +13,7 @@ FROM base as containerd-wasm-shims
 ADD https://github.com/deislabs/containerd-wasm-shims.git /containerd-wasm-shims
 
 FROM base as runwasi
-ADD https://github.com/rumpl/runwasi.git#io_bfq_weight /runwasi
+ADD https://github.com/rumpl/runwasi.git#prestart_hooks /runwasi
 
 
 

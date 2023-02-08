@@ -10,7 +10,7 @@ COPY --from=xx / /
 RUN apt-get update -y && apt-get install --no-install-recommends -y clang cmake
 
 FROM base as containerd-wasm-shims
-ADD https://github.com/deislabs/containerd-wasm-shims.git /containerd-wasm-shims
+ADD https://github.com/rumpl/containerd-wasm-shims.git#use-containerd-dependency /containerd-wasm-shims
 
 FROM base as runwasi
 ADD https://github.com/containerd/runwasi.git /runwasi

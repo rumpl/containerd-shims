@@ -63,8 +63,9 @@ RUN --mount=type=cache,target=/usr/local/cargo/git/db \
     cargo fetch
 ARG BUILD_TAGS TARGETPLATFORM
 SHELL ["/bin/bash", "-c"]
-RUN xx-apt-get install -y gcc g++ libc++6-dev zlib1g
+RUN xx-apt-get install -y gcc g++ libc++6-dev zlib1g protobuf-compiler
 RUN rustup target add $(xx-info march)-unknown-$(xx-info os)-$(xx-info libc)
+RUN rustup target add wasm32-wasi
 
 RUN --mount=type=cache,target=/usr/local/cargo/git/db \
     --mount=type=cache,target=/usr/local/cargo/registry/cache \

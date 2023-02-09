@@ -7,7 +7,7 @@ FROM --platform=$BUILDPLATFORM tonistiigi/xx:${XX_VERSION} AS xx
 
 FROM --platform=$BUILDPLATFORM rust:${RUST_VERSION} AS base
 COPY --from=xx / /
-RUN apt-get update -y && apt-get install --no-install-recommends -y clang cmake
+RUN apt-get update -y && apt-get install --no-install-recommends -y clang cmake protobuf-compiler
 
 FROM base as containerd-wasm-shims
 ADD https://github.com/rumpl/containerd-wasm-shims.git#use-containerd-dependency /containerd-wasm-shims
@@ -63,7 +63,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/git/db \
     cargo fetch
 ARG BUILD_TAGS TARGETPLATFORM
 SHELL ["/bin/bash", "-c"]
-RUN xx-apt-get install -y gcc g++ libc++6-dev zlib1g protobuf-compiler
+RUN xx-apt-get install -y gcc g++ libc++6-dev zlib1g
 RUN rustup target add $(xx-info march)-unknown-$(xx-info os)-$(xx-info libc)
 RUN rustup target add wasm32-wasi
 

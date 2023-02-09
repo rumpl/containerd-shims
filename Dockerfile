@@ -31,6 +31,7 @@ ENV WASMEDGE_LIB_DIR=/root/.wasmedge/lib
 ENV LD_LIBRARY_PATH=/root/.wasmedge/lib
 RUN xx-apt-get install -y gcc g++ libc++6-dev zlib1g
 RUN rustup target add $(xx-info march)-unknown-$(xx-info os)-$(xx-info libc)
+RUN rustup target add wasm32-wasi
 
 RUN <<EOT
     set -ex

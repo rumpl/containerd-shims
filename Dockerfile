@@ -8,7 +8,7 @@ FROM --platform=$BUILDPLATFORM tonistiigi/xx:${XX_VERSION} AS xx
 
 FROM --platform=$BUILDPLATFORM rust:${RUST_VERSION} AS base
 COPY --from=xx / /
-RUN apt-get update -y && apt-get install --no-install-recommends -y clang cmake protobuf-compiler
+RUN apt-get update -y && apt-get install --no-install-recommends -y clang cmake protobuf-compiler pkg-config dpkg-dev
 
 FROM base as containerd-wasm-shims
 ADD https://github.com/deislabs/containerd-wasm-shims.git /containerd-wasm-shims
@@ -30,7 +30,7 @@ ARG BUILD_TAGS TARGETPLATFORM WASMEDGE_VERSION
 ENV WASMEDGE_INCLUDE_DIR=/root/.wasmedge/include
 ENV WASMEDGE_LIB_DIR=/root/.wasmedge/lib
 ENV LD_LIBRARY_PATH=/root/.wasmedge/lib
-RUN xx-apt-get install -y gcc g++ libc++6-dev zlib1g libdbus-1-dev pkg-config libseccomp-dev
+RUN xx-apt-get install -y gcc g++ libc++6-dev zlib1g libdbus-1-dev libseccomp-dev
 RUN rustup target add $(xx-info march)-unknown-$(xx-info os)-$(xx-info libc)
 RUN rustup target add wasm32-wasi
 
@@ -48,6 +48,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/git/db \
     export "CARGO_NET_GIT_FETCH_WITH_CLI=true"
     export "CARGO_TARGET_$(xx-info march | tr '[:lower:]' '[:upper:]' | tr - _)_UNKNOWN_$(xx-info os | tr '[:lower:]' '[:upper:]' | tr - _)_$(xx-info libc | tr '[:lower:]' '[:upper:]' | tr - _)_LINKER=$(xx-info)-gcc"
     export "CC_$(xx-info march | tr '[:lower:]' '[:upper:]' | tr - _)_UNKNOWN_$(xx-info os | tr '[:lower:]' '[:upper:]' | tr - _)_$(xx-info libc | tr '[:lower:]' '[:upper:]' | tr - _)=$(xx-info)-gcc"
+    export "PKG_CONFIG=/usr/bin/$(xx-info)-pkg-config"
     cargo build --release --target-dir /build/app --target=$(xx-info march)-unknown-$(xx-info os)-$(xx-info libc)
     cp /build/app/$(xx-info march)-unknown-$(xx-info os)-$(xx-info libc)/release/containerd-shim-wasmedge-v1 /containerd-shim-wasmedge-v1
     cp /build/app/$(xx-info march)-unknown-$(xx-info os)-$(xx-info libc)/release/containerd-shim-wasmtime-v1 /containerd-shim-wasmtime-v1

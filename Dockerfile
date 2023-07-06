@@ -51,6 +51,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/git/db \
     --mount=type=cache,target=/usr/local/cargo/registry/index \
     --mount=type=cache,target=/build/app,id=wasmedge-wasmtime-$TARGETPLATFORM <<EOT
     set -e
+    export RUSTFLAGS='-Clink-arg=-Wl,-rpath,$ORIGIN'
     xx-cargo build --release --target-dir /build/app
     cp /build/app/$(xx-cargo --print-target-triple)/release/containerd-shim-wasm{time,edge}-v1 /
 EOT
@@ -84,7 +85,7 @@ COPY --link --from=build-containerd-wasm-shims /containerd-shim-spin-v1 /contain
 COPY --link --from=build-containerd-wasm-shims /containerd-shim-slight-v1 /containerd-shim-slight-v1
 
 # Runwasi shims
-COPY --link --from=build-runwasi /usr/local/lib/libwasmedge.so.0.0.2 /libwasmedge.so.0.0.2
+COPY --link --from=build-runwasi /usr/local/lib/libwasmedge.so.0.* /libwasmedge.so.0
 COPY --link --from=build-runwasi /containerd-shim-wasmedge-v1 /containerd-shim-wasmedge-v1
 COPY --link --from=build-runwasi /containerd-shim-wasmtime-v1 /containerd-shim-wasmtime-v1
 

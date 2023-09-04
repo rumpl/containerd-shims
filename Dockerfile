@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.5-labs
 
 ARG XX_VERSION=1.2.1
-ARG RUST_VERSION=1.72.0
+ARG RUST_VERSION=1.69.0
 ARG DEISLABS_SHIMS_VERSION=0.9.0
 ARG DEISLABS_SHIMS="lunatic slight spin wws"
 

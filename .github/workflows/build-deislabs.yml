@@ -1,0 +1,37 @@
+name: Build deislabs
+
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+      runtime:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: build ${{ inputs.runtime }} (${{ inputs.arch }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: jprendes/containerd-wasm-shims
+          ref: 1fd2964289b8d0b2101bdf175991d29a9b6f451b
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        env:
+          RUST_CACHE_KEY_OS: ${{ inputs.runtime }}-${{ inputs.arch }}
+        with:
+          rustflags: '' #Disable.  By default this action sets environment variable is set to -D warnings.  We manage this in the Makefile
+      - name: Install cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+      - name: Build
+        run: make build-${{ inputs.runtime }}-cross-${{ inputs.arch }}-unknown-linux-musl ARCH=${{ inputs.arch }}
+        shell: bash
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: containerd-shim-${{ inputs.runtime }}-${{ inputs.arch }}
+          path: containerd-shim-${{ inputs.runtime }}-v1/target/${{ inputs.arch }}-unknown-linux-musl/release/containerd-shim-${{ inputs.runtime }}-v1

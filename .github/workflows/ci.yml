@@ -12,16 +12,48 @@ env:
   REPO_SLUG: "rumpl/containerd-wasi-shims"
 
 jobs: 
+  build-deislabs:
+    name: ${{ matrix.runtime }}
+    strategy:
+      matrix:
+        arch: ["x86_64", "aarch64"]
+        runtime: ["lunatic", "slight", "spin", "wws"]
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/build-deislabs.yml
+    with:
+      arch: ${{ matrix.arch }}
+      runtime: ${{ matrix.runtime }}
+
+  build-runwasi:
+    name: ${{ matrix.runtime }}
+    strategy:
+      matrix:
+        arch: ["x86_64", "aarch64"]
+        runtime: ["wasmedge", "wasmer", "wasmtime"]
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/build-runwasi.yml
+    with:
+      arch: ${{ matrix.arch }}
+      runtime: ${{ matrix.runtime }}
+
   hub:
+    needs: [build-deislabs, build-runwasi]
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
+      - name: Download artifacts
+        uses: actions/download-artifact@master
+      - name: Group artifacts by arch
+        shell: bash
+        run: |
+          mkdir arm64
+          cp containerd-shim-*-aarch64/* arm64/
+          mkdir amd64
+          cp containerd-shim-*-x86_64/* amd64/
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
@@ -48,4 +80,3 @@ jobs:
             ${{ steps.meta.outputs.bake-file }}
           targets: image-cross
           push: ${{ github.event_name != 'pull_request' }}
-

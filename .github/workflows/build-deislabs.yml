@@ -17,8 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: jprendes/containerd-wasm-shims
-          ref: 1fd2964289b8d0b2101bdf175991d29a9b6f451b
+          repository: deislabs/containerd-wasm-shims
+          ref: 62056e94647405c580a5aa41b61a91c07f9053ec
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         env:
@@ -34,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: containerd-shim-${{ inputs.runtime }}-${{ inputs.arch }}
-          path: containerd-shim-${{ inputs.runtime }}-v1/target/${{ inputs.arch }}-unknown-linux-musl/release/containerd-shim-${{ inputs.runtime }}-v1
+          path: containerd-shim-${{ inputs.runtime }}/target/${{ inputs.arch }}-unknown-linux-musl/release/containerd-shim-${{ inputs.runtime }}-v*

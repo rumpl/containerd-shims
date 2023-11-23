@@ -34,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: containerd-shim-${{ inputs.runtime }}-${{ inputs.arch }}
-          path: containerd-shim-${{ inputs.runtime }}/target/${{ inputs.arch }}-unknown-linux-musl/release/containerd-shim-${{ inputs.runtime }}-v*
+          path: containerd-shim-${{ inputs.runtime }}/target/${{ inputs.arch }}-unknown-linux-musl/release/containerd-shim-${{ inputs.runtime }}-v[12]

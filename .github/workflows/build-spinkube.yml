@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: containerd-shim-spin-${{ inputs.arch }}
-          path: containerd-shim-spin/target/${{ inputs.arch }}-unknown-linux-musl/release/containerd-shim-spin-v[12]
+          path: target/${{ inputs.arch }}-unknown-linux-musl/release/containerd-shim-spin-v[12]

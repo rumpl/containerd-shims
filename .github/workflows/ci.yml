@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         arch: ["x86_64", "aarch64"]
-        runtime: ["lunatic", "slight", "spin", "wws"]
+        runtime: ["lunatic", "slight", "wws"]
     if: github.event_name != 'pull_request'
     uses: ./.github/workflows/build-deislabs.yml
     with:
@@ -36,8 +36,18 @@ jobs:
       arch: ${{ matrix.arch }}
       runtime: ${{ matrix.runtime }}
 
+  build-spinkube:
+    name: spin
+    strategy:
+      matrix:
+        arch: ["x86_64", "aarch64"]
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/build-spinkube.yml
+    with:
+      arch: ${{ matrix.arch }}
+
   hub:
-    needs: [build-deislabs, build-runwasi]
+    needs: [build-deislabs, build-runwasi, build-spinkube]
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:

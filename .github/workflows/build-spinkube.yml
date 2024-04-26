@@ -1,0 +1,34 @@
+name: Build spinkube
+
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: build spin (${{ inputs.arch }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: spinkube/containerd-shim-spin
+          ref: fe7edce78d4a28b9e3d4e3fc83b2ed6235622d5e
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        env:
+          RUST_CACHE_KEY_OS: ${{ inputs.arch }}
+        with:
+          rustflags: '' #Disable.  By default this action sets environment variable is set to -D warnings.  We manage this in the Makefile
+      - name: Install cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+      - name: Build
+        run: make build-spin-cross-${{ inputs.arch }}-unknown-linux-musl ARCH=${{ inputs.arch }}
+        shell: bash
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: containerd-shim-spin-${{ inputs.arch }}
+          path: containerd-shim-spin/target/${{ inputs.arch }}-unknown-linux-musl/release/containerd-shim-spin-v[12]
